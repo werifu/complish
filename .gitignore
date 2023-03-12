@@ -105,3 +105,7 @@ dist
 
 # rust target
 **/target
+
+tmp.ts
+
+*.fish
