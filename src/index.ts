@@ -25,6 +25,7 @@ program
     'the command you want to complete in fish, absolute path also supported.'
   )
   .addHelpText('after', '\nEnvironment varible OPENAI_API_KEY is needed.')
+  .addHelpText('afterAll', '\nAfter generating file, remember to copy the output file to a fish completion directory like ~/.config/fish/completions/')
   .action(main)
   .parse();
 
