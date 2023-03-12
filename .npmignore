@@ -1,0 +1,6 @@
+src/*
+test/*
+jest.config.js
+.vscode/*
+tmp.ts
+*.fish
