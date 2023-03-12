@@ -37,7 +37,8 @@ async function main(cmd: string) {
   }
 
   logger.debug(JSON.stringify(program.opts()));
-  if (help || Object.keys(program.opts()).length === 0) {
+  // -h or (no command and no options)
+  if (help || (!cmd && Object.keys(program.opts()).length === 0)) {
     return program.help();
   }
 
