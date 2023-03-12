@@ -38,6 +38,8 @@ complish croc
 ```
 然后你就会在当前目录得到一个 `croc.fish`
 
+> 注意：执行速度受限于chatGPT的回复速度，因此可能会花上10秒到1分钟不等时间
+
 之后把这个文件复制到 Fish 能自动加载的目录下即可，其他目录参见[这里](https://fishshell.com/docs/current/completions.html)
 
 ```bash

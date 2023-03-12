@@ -36,7 +36,9 @@ Generate completion for famous file-tranfer tool [croc](https://github.com/schol
 ```bash
 complish croc
 ```
-And you will find croc.fish in your current directory when the script finished.
+And you will find croc.fish in your current directory when the script finished. 
+
+> Note that the execution speed is limited by the response time of ChatGPT, so it may take 10 seconds to 1 minute or more to generate completion file.
 
 Then copy the fish script to the completions directory of fish shell for which the file can be automatically loaded. Other available directories can see [here](https://fishshell.com/docs/current/completions.html)
 
