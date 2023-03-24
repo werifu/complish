@@ -109,3 +109,4 @@ dist
 tmp.ts
 
 ./*.fish
+.openai.key

@@ -5,6 +5,7 @@ import { program } from 'commander';
 import * as fs from 'fs/promises';
 import logger, { setLogLevel } from './logger';
 import { OPENAI_API_KEY } from './openai';
+import path from 'path';
 
 const VERSION = require('../package.json').version;
 
@@ -25,9 +26,22 @@ program
     'the command you want to complete in fish, absolute path also supported.'
   )
   .addHelpText('after', '\nEnvironment varible OPENAI_API_KEY is needed.')
-  .addHelpText('afterAll', '\nAfter generating file, remember to copy the output file to a fish completion directory like ~/.config/fish/completions/')
-  .action(main)
-  .parse();
+  .addHelpText(
+    'afterAll',
+    '\nAfter generating file, remember to copy the output file to a fish completion directory like ~/.config/fish/completions/'
+  )
+  .action(main);
+
+program
+  .command('set-key [key]')
+  .description('set your OPENAI_API_KEY in local config')
+  .action(async (key) => {
+    if (key) {
+      await fs.writeFile(path.resolve(__dirname, '../.openai.key'), key);
+    }
+  });
+
+program.parse();
 
 async function main(cmd: string) {
   const { help, outfile, debug } = program.opts();
@@ -45,7 +59,7 @@ async function main(cmd: string) {
 
   if (!OPENAI_API_KEY) {
     logger.error(
-      'OPENAI_API_KEY not found in your env! \nPlease run `export OPENAI_API_KEY=your_api_key` before running complish'
+      'OPENAI_API_KEY not found in complish! run\n`export OPENAI_API_KEY=your_api_key`\nor\n`complish set-key your_api_key`\nbefore running complish'
     );
     return;
   }

@@ -1,15 +1,20 @@
+import { existsSync, readFileSync } from 'fs';
 import { OpenAIApi, Configuration, ChatCompletionRequestMessage } from 'openai';
-import { exit } from 'process';
+import path from 'path';
 import logger from './logger';
 import { Usage, UsageT } from './schema';
 import { safeJsonParse } from './utils/safeParse';
 
-export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const apiKeyPath = path.resolve(__dirname, '../.openai.key');
+
+export const OPENAI_API_KEY =
+  process.env.OPENAI_API_KEY ??
+  (existsSync(apiKeyPath) ? readFileSync(apiKeyPath).toString() : undefined);
+
 const configuration = new Configuration({
   apiKey: OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-
 
 const systemPrompt = `
 extract all subcommands and options in the text I will send you later and translate it into json with a format like the following:
@@ -81,7 +86,7 @@ export async function askChatGPT(helpText: string) {
         throw Error(msg);
       } else if (e.response.status === 429) {
         // api rate limit, ignore and wait for retrying
-        logger.debug(`status code 429. ${e.response?.data?.error?.message}`)
+        logger.debug(`status code 429. ${e.response?.data?.error?.message}`);
       }
     }
     throw Error(e);
@@ -121,12 +126,14 @@ export async function parseHelpText(text: string): Promise<UsageT> {
     throw Error(err);
   }
 
-  logger.debug(`Successfully parse the json code in answer: ${JSON.stringify(res.data)}`,);
+  logger.debug(
+    `Successfully parse the json code in answer: ${JSON.stringify(res.data)}`
+  );
   return res.data;
 }
 
 export function makeFnParseHelpText(text: string) {
   return async () => {
     return parseHelpText(text);
-  }
+  };
 }
