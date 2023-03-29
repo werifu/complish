@@ -1,8 +1,5 @@
-import {
-  cmdOptionCompletion,
-  completeHead,
-  subCmdCompletion,
-} from '../src/completion';
+import { completeHead, optionCompletion, subCmdCompletion } from '../../src/fish/code';
+
 describe('test generating compeltion', () => {
   test('head', () => {
     const cmdHead = completeHead('cmd');
@@ -14,22 +11,20 @@ describe('test generating compeltion', () => {
 
   test('sub cmd completion', () => {
     const completion = subCmdCompletion(
-      'cmd',
-      ['sub1', 'sub2'],
+      ['cmd', 'sub1', 'sub2'],
       'future_sub',
       'some description'
     );
     expect(completion).toBe(
       `${completeHead(
         'cmd'
-      )} -n "__is_cmd_chain cmd sub1 sub2" -a "future_sub" -d "some description"`
+      )} -n "__same_cmd_chain (echo (commandline -poc)) 'cmd sub1 sub2'" -a "future_sub" -d "some description"`
     );
   });
 
   test('cmd option completion', () => {
-    const completion = cmdOptionCompletion(
-      'cmd',
-      ['sub1', 'sub2'],
+    const completion = optionCompletion(
+      ['cmd', 'sub1', 'sub2'],
       '-f',
       '--file',
       'some desc',
@@ -38,7 +33,7 @@ describe('test generating compeltion', () => {
     expect(completion).toBe(
       `${completeHead(
         'cmd'
-      )} -n "__is_cmd_chain cmd sub1 sub2" -s f -l file --require-parameter -d "some desc"`
+      )} -n "__same_cmd_chain (echo (commandline -poc)) 'cmd sub1 sub2'" -s f -l file --require-parameter -d "some desc"`
     );
   });
 });

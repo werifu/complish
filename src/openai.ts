@@ -3,7 +3,7 @@ import { OpenAIApi, Configuration, ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import logger from './logger';
 import { Usage, UsageT } from './schema';
-import { safeJsonParse } from './utils/safeParse';
+import { safeJsonParse } from './utils/safe-parse';
 
 const apiKeyPath = path.resolve(__dirname, '../.openai.key');
 

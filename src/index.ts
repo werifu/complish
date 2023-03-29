@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { isCmdChainFunc } from './completion';
-import { execAndHandle } from './handle';
 import { program } from 'commander';
 import * as fs from 'fs/promises';
 import logger, { setLogLevel } from './logger';
 import { OPENAI_API_KEY } from './openai';
 import path from 'path';
+import { buildHelpTreeRec } from './help-tree';
+import { Completer } from './completer';
+import { FishCompleter } from './fish/fish-completer';
 
 const VERSION = require('../package.json').version;
 
@@ -19,8 +20,9 @@ program
   )
   .usage('[options] [cmd]')
   .option('-h, --help', 'print this help page')
-  .option('-o, --outfile <file>', 'output file, default: <cmd>.fish')
+  .option('-o, --outfile <file>', 'output file, default: <cmd>.<shell _type>')
   .option('-d, --debug', 'print debug information')
+  .option('-s, --shell <shell>', 'shell type: fish or zsh, default: fish')
   .argument(
     '[cmd]',
     'the command you want to complete in fish, absolute path also supported.'
@@ -44,7 +46,7 @@ program
 program.parse();
 
 async function main(cmd: string) {
-  const { help, outfile, debug } = program.opts();
+  const { help, outfile, debug, shell } = program.opts();
 
   if (debug) {
     logger.info('set log level: debug');
@@ -69,18 +71,27 @@ async function main(cmd: string) {
     return;
   }
 
-  console.time('Exec time:');
-  const script = (await execAndHandle(cmd, [])).map((line) =>
-    // $VAR in completion should be string "$VAR" instead of value of a variable
-    line.replaceAll('$', '\\$')
-  );
-  logger.info('\n------------parse finish!-----------\n');
+  let completer: Completer;
+  switch (shell) {
+    case 'fish':
+      completer = new FishCompleter(cmd);
+      break;
+    case 'zsh':
+      logger.error('zsh is not supported');
+      return;
+    default:
+      logger.error('--shell is needed and should be "fish" or "zsh"');
+      return;
+  }
 
-  const code = [isCmdChainFunc, ...script].join('\n');
+  console.time('Exec time:');
+
+  const helpTree = await buildHelpTreeRec([cmd]);
+  const code = completer.completeScript(helpTree);
 
   // write to file
   const finalOutfile: string =
-    outfile ?? `${cmd.includes('/') ? cmd.split('/').reverse()[0] : cmd}.fish`;
+    outfile ?? `${cmd.includes('/') ? cmd.split('/').reverse()[0] : cmd}.${completer.shell}`;
   logger.info(`Writing to ${finalOutfile}...`);
   try {
     await fs.writeFile(finalOutfile, code);
