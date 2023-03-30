@@ -110,3 +110,4 @@ tmp.ts
 
 ./*.fish
 .openai.key
+tmp/
