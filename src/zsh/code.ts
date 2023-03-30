@@ -61,7 +61,7 @@ export function completeSubcmds(
   const valuesTag = `"${cmdChain.join(' ')}"`;
   const values = subcmds.map((subcmd) => {
     if (subcmd.description) {
-      return `"${subcmd.name}[${addBackslash(subcmd.description, '"', '$')}]"`;
+      return `"${subcmd.name}[${addBackslash(subcmd.description, '"', '$', ']')}]"`;
     }
     return `"${subcmd.name}"`;
   });
@@ -85,14 +85,14 @@ export function completeOptions(options: OptT[]): string {
   for (const option of options) {
     if (option.short) {
       if (option.description) {
-        optionLines.push(`"${option.short}[${addBackslash(option.description, '"', '$')}]"`);
+        optionLines.push(`"${option.short}[${addBackslash(option.description, '"', '$', ']')}]"`);
       } else {
         optionLines.push(`"${option.short}"`);
       }
     }
     if (option.long) {
       if (option.description) {
-        optionLines.push(`"${option.long}[${addBackslash(option.description, '"', '$')}]"`);
+        optionLines.push(`"${option.long}[${addBackslash(option.description, '"', '$', ']')}]"`);
       } else {
         optionLines.push(`"${option.long}"`);
       }
