@@ -1,17 +1,19 @@
 import { z } from 'zod';
 
-interface SubCmdT {
+export interface SubCmdT {
   name: string;
   description?: string;
   alias?: string[];
   usage?: UsageT;
 }
 
+export type ArgT = z.infer<typeof Arg>;
 const Arg = z.object({
   name: z.string(),
   description: z.string().optional(),
 });
 
+export type OptT = z.infer<typeof Opt>;
 const Opt = z.object({
   short: z.string().optional(),
   long: z.string().optional(),
@@ -21,8 +23,8 @@ const Opt = z.object({
 
 export type UsageT = {
   subcommands: SubCmdT[];
-  arguments: z.infer<typeof Arg>[];
-  options: z.infer<typeof Opt>[];
+  arguments: ArgT[];
+  options: OptT[];
 };
 
 export const Usage: z.ZodType<UsageT> = z.object({

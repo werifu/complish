@@ -21,8 +21,4 @@ function __get_cmd_chain() {
   fi
 }
 
-string="This is a sample string"
-num_words=${#${(z)string}}
-echo $num_words
-echo $string
 

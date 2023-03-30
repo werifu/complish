@@ -11,11 +11,11 @@ export class FishCompleter implements Completer {
   }
 
   completeScript(usage: UsageT): string {
-    const usageCode = this.complete(usage, [this.command]);
+    const usageCode = this.complete([this.command], usage);
     return [fishFuncs, usageCode].join('\n');
   }
 
-  private complete(usage: UsageT, cmdChain: string[]): string {
+  private complete(cmdChain: string[], usage: UsageT): string {
     const script: string[] = [];
     if (!usage.arguments || usage.arguments.length === 0) {
       script.push(disableFileCompletion(cmdChain));
@@ -30,7 +30,7 @@ export class FishCompleter implements Completer {
       const line = subCmdCompletion(cmdChain, subcmd.name, subcmd.description);
       script.push(line);
       if (subcmd.usage) {
-        const subUsageCode = this.complete(subcmd.usage, [...cmdChain, subcmd.name]);
+        const subUsageCode = this.complete([...cmdChain, subcmd.name], subcmd.usage);
         script.push(subUsageCode);
       }
     }

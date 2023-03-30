@@ -7,6 +7,7 @@ import path from 'path';
 import { buildHelpTreeRec } from './help-tree';
 import { Completer } from './completer';
 import { FishCompleter } from './fish/fish-completer';
+import { ZshCompleter } from './zsh/zsh-completer';
 
 const VERSION = require('../package.json').version;
 
@@ -71,16 +72,23 @@ async function main(cmd: string) {
     return;
   }
 
+  if (!shell) {
+    logger.error('--shell is needed.');
+  }
+
   let completer: Completer;
+  let finalOutfile: string = '';
   switch (shell) {
     case 'fish':
       completer = new FishCompleter(cmd);
+      finalOutfile = outfile ?? `${cmd.split('/').reverse()[0]}.fish`;;
       break;
     case 'zsh':
-      logger.error('zsh is not supported');
-      return;
+      completer = new ZshCompleter(cmd);
+      finalOutfile = outfile ?? `_${cmd.split('/').reverse()[0]}`;
+      break;
     default:
-      logger.error('--shell is needed and should be "fish" or "zsh"');
+      logger.error(`--shell is not supported: ${shell}`);
       return;
   }
 
@@ -90,8 +98,6 @@ async function main(cmd: string) {
   const code = completer.completeScript(helpTree);
 
   // write to file
-  const finalOutfile: string =
-    outfile ?? `${cmd.includes('/') ? cmd.split('/').reverse()[0] : cmd}.${completer.shell}`;
   logger.info(`Writing to ${finalOutfile}...`);
   try {
     await fs.writeFile(finalOutfile, code);
