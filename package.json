@@ -1,7 +1,7 @@
 {
   "name": "complish",
   "version": "0.1.4",
-  "description": "Complish - Generate completion file for your CLI in fish-shell via chatGPT.",
+  "description": "Complish - Generate auto-completion file for any CLI via chatGPT.",
   "scripts": {
     "build": "npm run chmod; tsc --build tsconfig.json",
     "start": "node dist/index.js",
@@ -22,7 +22,10 @@
     "typescript",
     "CLI",
     "chatGPT",
-    "help page"
+    "help page",
+    "fish",
+    "zsh",
+    "completion"
   ],
   "author": "Werifu <github.com/werifu>",
   "license": "MIT",

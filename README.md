@@ -1,17 +1,14 @@
 # complish
 ![license](https://img.shields.io/github/license/werifu/complish)
-![release](https://img.shields.io/github/v/release/werifu/complish)
+![release](https://img.shields.io/npm/v/complish?label=Latest%20Version)
 
 [English](./README.md) | [简体中文](./README-zh.md)
 
-<h3 align="center">Generate completion file for your CLI in fish-shell via chatGPT.</h3>
+<h3 align="center">Generate auto-completion file for any CLI via chatGPT.</h3>
 
-Complish is a tool to generate fish-completion file for any type of CLI.
+Complish is a tool to generate completion file for any type of CLI, now supports __zsh__ and __fish__.
 
-The tool uses chatGPT API to parse the help page of a CLI (the text printed when executing `cmd --help`) and output structured information about this help page.
-Then generate a fish completion script, for details of fish completion, see [fish-completion](https://fishshell.com/docs/current/completions.html).
-
-Not using Fish shell now? I strongly recommend it! https://fishshell.com/
+The tool uses chatGPT API to parse the help page of a CLI (the text printed when executing `cmd --help`) and output structured information about the help page. And then generate a completion script for specific shell like zsh or fish.
 
 ## Installing
 
@@ -25,31 +22,61 @@ npm i -g complish
 complish [options] [cmd]
 ```
 
-Environment OPENAI_API_KEY is needed first. If you have no the key, you can apply for one on [OpenAI](https://platform.openai.com/account/api-keys) and remember to keep secret!
+API key of OpenAI is necessary, and you can set the key either by setting an environment variable or using `complish set-key` like following:
+
 ```bash
 export OPENAI_API_KEY=your_openai_api_key
 ```
 
-Example:
+or
 
-Generate completion for famous file-tranfer tool [croc](https://github.com/schollz/croc).
 ```bash
-complish croc
+complish set-key your_openai_api_key
 ```
-And you will find croc.fish in your current directory when the script finished. 
 
-> Note that the execution speed is limited by the response time of ChatGPT, so it may take 10 seconds to 1 minute or more to generate completion file.
+If you have no the key, you can apply for one on [OpenAI](https://platform.openai.com/account/api-keys) and remember to keep secret!
 
-Then copy the fish script to the completions directory of fish shell for which the file can be automatically loaded. Other available directories can see [here](https://fishshell.com/docs/current/completions.html)
+
+### Example in fish
+
+Generate a fish completion for a CLI named `mycmd` 
+```bash
+complish mycmd --shell fish
+```
+
+And you will find mycmd.fish in your current directory when the script finished. 
+
+> Note that the execution speed is limited by the response time of ChatGPT, so it may take 10 seconds to 1 minute or more to generate a completion file.
+
+Then copy the fish script to the completions directory of fish shell for which the file can be automatically loaded. Other available fish completion directories can be seen [here](https://fishshell.com/docs/current/completions.html)
 
 ```bash
 cp ./croc.fish ~/.config/fish/completions/
-source
 ```
 
-At last you will find the completion works when you press \<TAB\>
+It will work after you reopen the terminal and you will find the completion works when you press \<TAB\>
 
-![](./assets/croc-complete.png)
+![](./assets/mycmd-fish.png)
+
+### Example in zsh
+
+Generate a zsh completion for a CLI named `mycmd` 
+```bash
+complish mycmd --shell zsh
+```
+And you will find _mycmd file which is the format of zsh-completion file in your current directory when the script finished. 
+
+Then copy the zsh completion file to a directory that is in environment variable `$fpath`. You can check it by running `echo $fpath` for all valid directories in zsh.
+
+```bash
+cp ./_mycmd /Users/you/.zsh/functions
+```
+
+It will work after you reopen the terminal and you will find the completion works when you press \<TAB\>
+
+![](./assets/mycmd-zsh.png)
+
+
 ## Development
 
 Clone this repo.
@@ -81,10 +108,9 @@ pnpm dev
 
 Pull requests / issues are both welcome! 
 
-Please give me your suggestions! 😊
+Please give me your suggestions or other feedback! 😊
 
 ## TODO
-
-* [ ] Text clip (too long help page cannot be handled by chatGPT)
+* [ ] Support bash completion (in planning)
 * [ ] Reduce API calling times (bottle neck of this tool)
-* [ ] More detail arguments completion (now only using --require-parameter)
+* [ ] More detail arguments completion
