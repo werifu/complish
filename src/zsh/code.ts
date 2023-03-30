@@ -1,4 +1,5 @@
 import { OptT, SubCmdT, UsageT } from '../schema';
+import { addBackslash } from '../utils/backslash';
 
 /**
  * Return the code for the complete function
@@ -59,7 +60,10 @@ export function completeSubcmds(
 ): string {
   const valuesTag = `"${cmdChain.join(' ')}"`;
   const values = subcmds.map((subcmd) => {
-    return `"${subcmd.name}[${subcmd.description}]"`;
+    if (subcmd.description) {
+      return `"${subcmd.name}[${addBackslash(subcmd.description, '"', '$')}]"`;
+    }
+    return `"${subcmd.name}"`;
   });
   return [`  _values ${valuesTag}`, ...values].join(' \\\n    ');
 }
@@ -80,10 +84,18 @@ export function completeOptions(options: OptT[]): string {
   const optionLines: string[] = [];
   for (const option of options) {
     if (option.short) {
-      optionLines.push(`"${option.short}[${option.description}]"`);
+      if (option.description) {
+        optionLines.push(`"${option.short}[${addBackslash(option.description, '"', '$')}]"`);
+      } else {
+        optionLines.push(`"${option.short}"`);
+      }
     }
     if (option.long) {
-      optionLines.push(`"${option.long}[${option.description}]"`);
+      if (option.description) {
+        optionLines.push(`"${option.long}[${addBackslash(option.description, '"', '$')}]"`);
+      } else {
+        optionLines.push(`"${option.long}"`);
+      }
     }
   }
   return ['  _arguments -s', ...optionLines].join(' \\\n    ');
@@ -133,13 +145,12 @@ function __get_cmd_chain() {
 
 export function mainCompletionFnCode(cmd: string, usage: UsageT): string {
   const cmdChains: string[][] = dfsCmdChain([cmd], usage);
-  const branches: string[] = cmdChains.map(cmdChain => {
-    const branch =
-      `  "${cmdChain.join(' ')}")
+  const branches: string[] = cmdChains.map((cmdChain) => {
+    const branch = `  "${cmdChain.join(' ')}")
     complete_${cmdChain.join('_')}
     ;;`;
     return branch;
-  })
+  });
   const fnCode = `
 function _${cmd}() {
   local parsed=$(__get_cmd_chain $BUFFER)
@@ -181,13 +192,13 @@ function dfsCmdChain(curChain: string[], usage?: UsageT): string[][] {
 
 /**
  * Special comment for zsh completion
- * 
+ *
  * Example:
  * ```zsh
  * #compdef _cmd cmd
  * ```
- * @param cmd 
- * @returns 
+ * @param cmd
+ * @returns
  */
 export function topComment(cmd: string) {
   return `#compdef _${cmd} ${cmd}`;

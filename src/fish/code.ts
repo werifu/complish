@@ -1,4 +1,5 @@
-import path from "path";
+import path from 'path';
+import { addBackslash } from '../utils/backslash';
 
 /**
  * -c or --command COMMAND
@@ -35,11 +36,10 @@ export function subCmdCompletion(
   script.push(add);
 
   if (description) {
-    script.push(`-d "${description.replaceAll('"', '\\"')}"`);
+    script.push(`-d "${addBackslash(description, '"', '$')}"`);
   }
   return script.join(' ');
 }
-
 
 /**
  * Add completion for the indented option
@@ -66,7 +66,7 @@ export function optionCompletion(
     script.push('--require-parameter');
   }
   if (description) {
-    script.push(`-d "${description.replaceAll('"', '\\"')}"`);
+    script.push(`-d "${addBackslash(description, '"', '$')}"`);
   }
   return script.join(' ');
 }
@@ -81,11 +81,12 @@ export function disableFileCompletion(cmdChain: string[]): string {
  */
 export function getCondition(cmdChain: string[]): string {
   const fmtChainStr = cmdChain
-    .map((cmd) => cmd.replaceAll('"', '\\"').replaceAll("'", "\\'"))
+    .map((cmd) =>
+      addBackslash(cmd, '"', "'", '$')
+    )
     .join(' ');
   return `-n "__same_cmd_chain (echo (commandline -poc)) '${fmtChainStr}'"`;
 }
-
 
 /**
  * Returns 0 (true in Unix) if the current commandline matches the command chain from arguments of this function.
@@ -99,8 +100,7 @@ export function getCondition(cmdChain: string[]): string {
  *
  * `__same_cmd_chain "cmd sub1 sub2" "cmd sub1 sub2 -f file"` returns 0
  */
-export const fishFuncs =
-  `# match all args before '-' options
+export const fishFuncs = `# match all args before '-' options
 function __get_cmd_chain
     set -l truncated_array
     set -l array (string split " " $argv)
