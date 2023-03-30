@@ -4,3 +4,5 @@ jest.config.js
 .vscode/*
 tmp.ts
 *.fish
+tmp/*
+.*
