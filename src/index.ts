@@ -74,6 +74,7 @@ async function main(cmd: string) {
 
   if (!shell) {
     logger.error('--shell is needed.');
+    return;
   }
 
   let completer: Completer;
@@ -106,6 +107,9 @@ async function main(cmd: string) {
     logger.error(e);
     console.log(`code:\n${code}`);
   }
-  logger.info('\n------------write finish!-----------\n');
+  logger.info('\n------------write finish!------------\n');
+
+  logger.info(completer.postHelp());
+
   console.timeLog('Exec time:');
 }

@@ -17,6 +17,10 @@ export class ZshCompleter implements Completer {
     this.command = command;
   }
 
+  postHelp(): string {
+    return `Remember to copy the file to your zsh completions directory. Run \`echo $fpath\` to check.`;
+  }
+
   completeScript(usage: UsageT): string {
     const script: string[] = [];
     script.push(topComment(this.command));

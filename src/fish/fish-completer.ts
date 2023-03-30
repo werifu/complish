@@ -10,6 +10,10 @@ export class FishCompleter implements Completer {
     this.command = command;
   }
 
+  postHelp(): string {
+    return `Remember to copy the file to your fish completions directory. Run \`echo $fish_complete_path\` to check.`;
+  }
+
   completeScript(usage: UsageT): string {
     const usageCode = this.complete([this.command], usage);
     return [fishFuncs, usageCode].join('\n');
