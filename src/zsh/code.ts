@@ -141,7 +141,7 @@ export function mainCompletionFnCode(cmd: string, usage: UsageT): string {
     return branch;
   })
   const fnCode = `
-function _mycmd() {
+function _${cmd}() {
   local parsed=$(__get_cmd_chain $BUFFER)
 
   # "eat" the previous arguments and options so that _arguments can work normally
